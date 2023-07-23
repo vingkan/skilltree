@@ -1,0 +1,184 @@
+@import url('https://fonts.googleapis.com/css2?family=Metrophobic&family=Silkscreen:wght@400&display=swap');
+
+html, body {
+  margin: 0;
+  padding: 0;
+  font-size: 0;
+  font-family: 'Metrophobic', sans-serif;
+}
+
+html {
+  background: #303129;
+  color: white;
+  overflow-x: hidden;
+}
+
+h1, h2, h3 {
+  font-family: 'Silkscreen', sans-serif;
+  margin: 0;
+}
+
+h1 {
+  font-size: 3.5em;
+}
+
+h2 {
+  font-size: 2em;
+}
+
+h3 {
+  font-size: 1.2em;
+}
+
+p, ul, ol {
+  font-size: 1em;
+}
+
+.Content {
+  font-size: 16px;
+}
+
+.Container {
+  width: 100%;
+  vertical-align: top;
+}
+
+.Column {
+  display: inline-block;
+  vertical-align: top;
+  box-sizing: border-box;
+}
+
+.Column:nth-child(1) {
+  width: 35%;
+}
+
+.Column:nth-child(2) {
+  width: 65%;
+}
+
+.Title {
+  text-align: center;
+  height: 10vh;
+  line-height: 10vh;
+  margin-top: -0.5em;
+  background: rgba(0, 0, 0, 0.5);
+}
+
+.Editor, .Cytoscape {
+  box-sizing: border-box;
+  width: 100%;
+  height: 90vh;
+}
+
+.Cytoscape {
+  z-index: 0;
+}
+
+@media (max-width: 500px) {
+
+  .Column {
+    width: 100% !important;
+  }
+  
+  .Editor {
+    height: 50vh;
+  }
+
+  .Cytoscape {
+    height: 100vh;
+  }
+
+}
+
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: #272822;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.5);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 0, 0, 0.75);
+  cursor: pointer;
+}
+
+.Viewer {
+  position: absolute;
+  z-index: 1;
+  padding: 1em;
+  margin: 1em;
+  width: 300px;
+  background: rgba(0, 0, 0, 0.25);
+  box-shadow: 0 0 10px 5px rgba(0, 0, 0, 0.1);
+}
+
+.Closer {
+  position: absolute;
+  right: 1.25em;
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.Closer:hover {
+  cursor: pointer;
+  color: #fc462d;
+}
+
+.Conditions li {
+  list-style: none;
+  margin: 0.25em 0;
+}
+
+.Conditions ul {
+  margin: 0.25em 0;
+}
+
+.Conditions li:before {
+  content: ".";
+  line-height: 1em;
+  background: black;
+  color: transparent;
+  margin-left: -2em;
+  padding-right: 0.85em;
+  margin-right: 0.5em;
+  border-radius: 0.75em;
+}
+
+.Conditions li.Unsatisfied:before {
+  background: #fc462d;
+}
+
+.Conditions li.Satisfied:before {
+  background: #ccfc2d;
+}
+
+.Cytoscape .Unsatisfied {
+  background-color: #fc462d;
+}
+
+.Cytoscape .Satisfied {
+  background-color: #ccfc2d;
+}
+
+.ExperienceEditor input {
+  box-sizing: border-box;
+  background: transparent;
+  color: white;
+  width: 100%;
+  margin-top: 1em;
+  padding: 0.5em;
+  outline: none;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  font-family: 'Metrophobic', sans-serif;
+  font-size: 16px;
+}
+
+.ExperienceEditor input:focus {
+  outline: none;
+  border: 1px solid rgba(255, 255, 255, 0.75);
+}

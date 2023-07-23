@@ -1,2 +1,1 @@
-# skilltree
-Skill Tree Editor
+# Skill Tree Editor
