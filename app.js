@@ -128,19 +128,19 @@ function getItemTree(results, req, key) {
     return { ...req, key, title, items }
   }
   if (req.type === "experience") {
-    const exp = req.required
-    const inv = req.invested
+    const exp = req.required.toLocaleString()
+    const inv = req.invested.toLocaleString()
     const title = `Invested ${inv} / ${exp} EXP in this skill`
     return { ...req, key, title }
   }
   if (req.type === "total_experience") {
-    const exp = req.required
-    const acc = req.accumulated
+    const exp = req.required.toLocaleString()
+    const acc = req.accumulated.toLocaleString()
     const title = `Invested ${acc} / ${exp} EXP in this tree`
     const notes = req.details.map((d, i) => {
       const name = results.skills?.[d.skillId]?.title || d.skillId
       const childKey = `${key}-note-${i}`
-      const title = `${d.invested} from ${name}`
+      const title = `${d.invested.toLocaleString()} from ${name}`
       const satisfied = results.skills?.[d.skillId]?.requirements?.satisfied || false
       return { key: childKey, title, satisfied }
     })
