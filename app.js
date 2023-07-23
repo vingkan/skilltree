@@ -56,6 +56,11 @@ function CytoscapeWrapper({
       updateNodeId(node.id())
     })
 
+    cy.on("tap", "node", function (event) {
+      const node = event.target
+      updateNodeId(node.id())
+    })
+
     return () => cy.destroy()
   }, [elements, layout, defaultLayout, positions])
 
