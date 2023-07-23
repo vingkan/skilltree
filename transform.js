@@ -70,18 +70,6 @@ function transformToGraphData(results, positions) {
   return { nodes, edges }
 }
 
-// function findCycle(tree) {
-//   let visited = {}
-//   let queue = Object.keys(tree.skills)
-//   while (queue.length > 0) {
-//     const skillId = queue.shift()
-//     visited[skillId] = true
-
-//   }
-
-// }
-
-
 function hasCycle(graph) {
   const visited = new Set();
   const currentlyVisiting = new Set();
@@ -125,16 +113,18 @@ function toGraph(tree) {
 }
 
 
-function getAccumulatedPoints(skillId, progress, tree) {
+function getAccumulatedPoints(skillId, progress, tree, totalReq) {
+  const { maxDepth } = totalReq
   const req = tree?.skills?.[skillId]?.requirements || {}
   let details = []
   let visited = {}
-  let queue = getSkillsForRequirements(req)
+  let queue = getSkillsForRequirements(req).map(s => ([s, 1]))
   while (queue.length > 0) {
-    const depId = queue.shift()
+    const [depId, depth] = queue.shift()
     if (depId in visited) continue
+    if (maxDepth > 0 && depth > maxDepth) continue
     const dep = tree?.skills?.[depId]?.requirements || {}
-    const dependencies = getSkillsForRequirements(dep)
+    const dependencies = getSkillsForRequirements(dep).map(s => ([s, depth + 1]))
     queue = [...queue, ...dependencies]
     const invested = progress?.experience?.[depId] || 0
     details.push({ skillId: depId, invested })
@@ -156,7 +146,7 @@ function evaluateRequirement(skillId, req, progress, results, tree) {
   }
   if (req.type === "total_experience") {
     const required = req.required || 0
-    const details = getAccumulatedPoints(skillId, progress, tree)
+    const details = getAccumulatedPoints(skillId, progress, tree, req)
     const accumulated = details.reduce((a, v) => a + v.invested, 0)
     const satisfied = accumulated >= required
     return { ...req, required, details, accumulated, satisfied }
@@ -230,7 +220,8 @@ function configToRequirements(configs) {
       return { type: "experience", required: c.exp }
     }
     if ("total_exp" in c) {
-      return { type: "total_experience", required: c.total_exp }
+      const maxDepth = c.max_depth || -1
+      return { type: "total_experience", required: c.total_exp, maxDepth }
     }
     if ("skill" in c) {
       return { type: "skill", "skillId": c.skill }
@@ -262,8 +253,8 @@ function configToTree(config) {
   const updated = Object.keys(skills).map(skillId => {
     const skill = skills[skillId]
     const unSnaked = unSnakeCase(skillId)
-    const { shortTitle, description } = skill
-    const miniTitle = shortTitle || unSnaked
+    const { short_title, description } = skill
+    const miniTitle = short_title || unSnaked
     const reqs = skill?.requires || []
     const requirements = configToRequirements(reqs)
     return { [skillId]: { shortTitle: miniTitle, description, requirements } }
