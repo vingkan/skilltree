@@ -28,7 +28,7 @@ function transformToGraphData(results, positions) {
   for (const skillId in results.skills) {
     if (!skillId) continue
     const skill = results.skills[skillId]
-    const label = skill.shortTitle || skillId
+    const label = skill.title || skillId
     const satClass = skill.requirements.satisfied ? "Satisfied" : "Unsatisfied"
     const position = positions?.[skillId]
     nodes.push({
@@ -253,11 +253,11 @@ function configToTree(config) {
   const updated = Object.keys(skills).map(skillId => {
     const skill = skills[skillId]
     const unSnaked = unSnakeCase(skillId)
-    const { short_title, description } = skill
-    const miniTitle = short_title || unSnaked
+    const { title, description } = skill
+    const displayTitle = title || unSnaked
     const reqs = skill?.requires || []
     const requirements = configToRequirements(reqs)
-    return { [skillId]: { shortTitle: miniTitle, description, requirements } }
+    return { [skillId]: { title: displayTitle, description, requirements } }
   }).reduce((agg, val) => ({...agg, ...val}), {})
   return { skills: updated }
 }

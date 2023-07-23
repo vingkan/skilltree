@@ -138,7 +138,7 @@ function getItemTree(results, req, key) {
     const acc = req.accumulated
     const title = `Invested ${acc} / ${exp} EXP in this tree`
     const notes = req.details.map((d, i) => {
-      const name = results.skills?.[d.skillId]?.shortTitle || d.skillId
+      const name = results.skills?.[d.skillId]?.title || d.skillId
       const childKey = `${key}-note-${i}`
       const title = `${d.invested} from ${name}`
       const satisfied = results.skills?.[d.skillId]?.requirements?.satisfied || false
@@ -148,7 +148,7 @@ function getItemTree(results, req, key) {
   }
   if (req.type === "skill") {
     const skillId = req.skillId
-    const skill = results.skills?.[skillId]?.shortTitle || skillId
+    const skill = results.skills?.[skillId]?.title || skillId
     const verb = req.satisfied ? "Learned" : "Learn"
     const title = `${verb} ${skill}`
     return { ...req, key, title }
@@ -235,7 +235,7 @@ function Viewer({ results, nodeId, updateNodeId, setExperience }) {
   return (
     <div className="Viewer Content">
       <span className="Closer" onClick={closeNode}>x</span>
-      <h2>{node.shortTitle || nodeId}</h2>
+      <h2>{node.title || nodeId}</h2>
       <p>{node.description}</p>
       <Requirements {...{results, node}} />
       <ExperienceEditor {...{nodeId, value: experience, setValue: setPoints}} />
