@@ -1,17 +1,29 @@
 const { useState, useEffect, useRef, Fragment } = React
 
-function CytoscapeWrapper({ elements, settings, positions, updateNodeId, updatePositions }) {
+function CytoscapeWrapper({
+  elements,
+  settings,
+  defaultLayout,
+  layout,
+  positions,
+  updateNodeId,
+  updatePositions
+}) {
   const ref = useRef()
+
+  const hasLayout = Object.keys(layout).length > 0
+  const hasPositions = Object.keys(positions).length > 0
 
   useEffect(() => {
 
     const cy = cytoscape({
       container: ref.current,
       elements,
+      layout: defaultLayout,
       ...settings
     })
 
-    if (positions) {
+    if (!hasLayout) {
       cy.batch(() => {
         cy.nodes().forEach(node => {
           const nodeId = node.id()
@@ -22,13 +34,21 @@ function CytoscapeWrapper({ elements, settings, positions, updateNodeId, updateP
       })
     }
 
+    if (hasLayout) {
+      try {
+        cy.layout(layout).run()
+      } catch (error) {}
+    }
+
     cy.fit()
 
     cy.on("dragfree", "node", function(event) {
       const node = event.target
       let current = {...positions}
       current[node.id()] = node.position()
-      updatePositions(current)
+      if (!hasLayout) {
+        updatePositions(current)
+      }
     })
 
     cy.on("click", "node", function (event) {
@@ -36,7 +56,8 @@ function CytoscapeWrapper({ elements, settings, positions, updateNodeId, updateP
       updateNodeId(node.id())
     })
 
-  }, [elements])
+    return () => cy.destroy()
+  }, [elements, layout, defaultLayout, positions])
 
   return (
     <div ref={ref} className="Cytoscape"></div>
@@ -217,6 +238,47 @@ function Viewer({ results, nodeId, updateNodeId, setExperience }) {
   )
 }
 
+const defaultLayout = {
+  name: "breadthfirst",
+  animate: false,
+  nodeDimensionsIncludeLabels: true,
+  avoidOverlap: true
+}
+
+const cytoscapeSettings = {
+  style: [
+    {
+      selector: "node",
+      style: {
+        label: "data(label)",
+        color: "white",
+        "font-size": "12px",
+        "font-family": "Metrophobic"
+      }
+    },
+    {
+      selector: "edge",
+      style: {
+        width: 3
+      }
+    },
+    {
+      selector: ".Unsatisfied",
+      style: {
+        "background-color": "#fc462d",
+        "line-color": "#fc462d"
+      }
+    },
+    {
+      selector: ".Satisfied",
+      style: {
+        "background-color": "#ccfc2d",
+        "line-color": "#ccfc2d"
+      }
+    }
+  ]
+}
+
 const defaultConfig = `
 title: Skill Tree Editor
 skills:
@@ -232,7 +294,7 @@ skills:
     - skill: b
 `.trim()
 
-function App({ settings }) {
+function App() {
   const storedConfig = localStorage.getItem("stored_config", "").trim()
   const initialConfig = storedConfig.length > 0 ? storedConfig : defaultConfig
   const [text, setText] = useState(initialConfig)
@@ -250,6 +312,8 @@ function App({ settings }) {
   const elements = transformToGraphData(results)
 
   const title = config?.title || "(Untitled)"
+  const settings = cytoscapeSettings
+  const layout = config?.layout || {}
 
   const updateText = (text) => {
     localStorage.setItem("stored_config", text)
@@ -303,56 +367,23 @@ function App({ settings }) {
         </div>
         <div className="Column">
           <Viewer {...{results, nodeId, updateNodeId, setExperience}} />
-          <Visualizer {...{elements, settings, positions, updateNodeId, updatePositions}} />
+          <Visualizer {...{
+            elements,
+            settings,
+            defaultLayout,
+            layout,
+            positions,
+            updateNodeId,
+            updatePositions
+          }}
+          />
         </div>
       </div>
     </div>
   )
 }
 
-const cytoscapeSettings = {
-  layout: {
-    name: "breadthfirst",
-    animate: false,
-    nodeDimensionsIncludeLabels: true,
-    avoidOverlap: true
-  },
-  style: [
-    {
-      selector: "node",
-      style: {
-        label: "data(label)",
-        color: "white",
-        "font-size": "12px",
-        "font-family": "Metrophobic"
-      }
-    },
-    {
-      selector: "edge",
-      style: {
-        width: 3
-      }
-    },
-    {
-      selector: ".Unsatisfied",
-      style: {
-        "background-color": "#fc462d",
-        "line-color": "#fc462d"
-      }
-    },
-    {
-      selector: ".Satisfied",
-      style: {
-        "background-color": "#ccfc2d",
-        "line-color": "#ccfc2d"
-      }
-    }
-  ]
-}
-
 const container = document.getElementById("root")
 const root = ReactDOM.createRoot(container)
-const app = (
-  <App settings={cytoscapeSettings} />
-)
+const app = <App />
 root.render(app);
