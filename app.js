@@ -217,9 +217,25 @@ function Viewer({ results, nodeId, updateNodeId, setExperience }) {
   )
 }
 
+const defaultConfig = `
+title: Skill Tree Editor
+skills:
+  a:
+    requires:
+    - exp: 10
+  b:
+    requires:
+    - exp: 10
+  c:
+    requires:
+    - skill: a
+    - skill: b
+`.trim()
+
 function App({ settings }) {
-  const storedConfig = localStorage.getItem("stored_config", "")
-  const [text, setText] = useState(storedConfig)
+  const storedConfig = localStorage.getItem("stored_config", "").trim()
+  const initialConfig = storedConfig.length > 0 ? storedConfig : defaultConfig
+  const [text, setText] = useState(initialConfig)
 
   const [editor, setEditor] = useState()
 
@@ -232,6 +248,8 @@ function App({ settings }) {
   const positions = config?.positions || {}
   const results = evaluateAllSkills(tree, progress)
   const elements = transformToGraphData(results)
+
+  const title = config?.title || "(Untitled)"
 
   const updateText = (text) => {
     localStorage.setItem("stored_config", text)
@@ -277,7 +295,7 @@ function App({ settings }) {
   return (
     <div className="App">
       <div className="Content Title">
-        <h1>Skill Tree Editor</h1>
+        <h1>{title}</h1>
       </div>
       <div className="Container">
         <div className="Column">
