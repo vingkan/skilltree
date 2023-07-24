@@ -300,7 +300,7 @@ skills:
 `.trim()
 
 function App() {
-  const storedConfig = localStorage.getItem("stored_config", "").trim()
+  const storedConfig = localStorage.getItem("stored_config", "")?.trim() || ""
   const initialConfig = storedConfig.length > 0 ? storedConfig : defaultConfig
   const [text, setText] = useState(initialConfig)
 
